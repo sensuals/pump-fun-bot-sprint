@@ -365,6 +365,9 @@ export function createStrategy(p: Params = DEFAULT_PARAMS): Bot {
           continue;
         }
         let exit = h.exiting;
+        // Layered exits, checked cheapest first: hard stop, then the trailing
+        // stop (only once the trade has run up enough to arm it), then fade
+        // and time exits. A position already exiting never re-enters this block.
         if (!exit && value < cost * (1 - p.stopLoss)) exit = true;
         if (!exit && h.peakValue >= cost * (1 + p.trailArm) && value < h.peakValue * (1 - p.trail)) exit = true;
         if (!exit && flow(t, now, p.fadeWindow) < -p.fadeNetSol) exit = true;
